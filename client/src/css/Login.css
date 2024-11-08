@@ -1,0 +1,90 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f7fa;
+    margin-top: 2rem;
+  }
+  
+  .auth-form {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .input-group input::placeholder {
+    color: black; 
+    font-weight: 300;
+  }
+  
+
+  .auth-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .auth-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .auth-switch {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .auth-switch a {
+    color: #2b612d;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 5px;
+  }
+  
+  .auth-switch a:hover {
+    text-decoration: underline;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+
+  .input-group input[type="file"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+  }
+  

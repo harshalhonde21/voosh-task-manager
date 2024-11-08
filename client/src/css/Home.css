@@ -1,0 +1,92 @@
+/* Home Page Styles */
+.home-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 5rem;
+  }
+  
+  /* Logo and Title */
+  .logo-section {
+    padding-bottom: 30px;
+  }
+  
+  .logo {
+    width: 150px;
+    height: auto;
+  }
+  
+  .app-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #3c3c3c;
+    margin-top: 10px;
+  }
+  
+  .app-description {
+    font-size: 18px;
+    color: #777;
+    margin-top: 10px;
+  }
+  
+  /* Features Section */
+  .features-section {
+    margin-top: 50px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 40px;
+  }
+  
+  .feature-cards {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .card-icon {
+    font-size: 40px;
+    color: #3b82f6;
+    margin-bottom: 15px;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .card p {
+    color: #555;
+    font-size: 14px;
+  }
+  
+  /* Footer Section */
+  .footer {
+    margin-top: 50px;
+    font-size: 14px;
+    color: #aaa;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+  }
+  

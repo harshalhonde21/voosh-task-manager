@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #282c34;
+    color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+    /* Ensure padding doesn't push the content out */
+}
+
+.navbar-left {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+    align-items: center;
+}
+
+.navbar-left img {
+    width: 140px; /* Adjust the size of the logo */
+    height: 60px; /* Keep it square for rounding */
+    object-fit: cover; /* Ensures the image fits within the circle */
+}
+
+
+.navbar-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex: 2;
+}
+
+.navbar-right {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.navbar-link {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+    color: #4CAF50;
+    /* Change color on hover */
+}
+
+.navbar-icon {
+    font-size: 30px;
+    color: white;
+}
+
+/* Hamburger menu for small screens */
+.navbar-hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+}
+
+/* Style for the login button to look like a button */
+.login-btn {
+    background-color: #4CAF50;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.login-btn:hover {
+    background-color: #45a049;
+    /* Darker shade on hover */
+    color: whitesmoke;
+}
+
+/* Open navbar on hamburger menu click */
+.navbar-center.open {
+    display: block;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .navbar-left,
+    .navbar-right {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .navbar-center {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-right {
+        display: none;
+    }
+
+    .navbar-hamburger {
+        display: block;
+        position: absolute;
+        right: 10px;
+        /* Align hamburger to the right */
+        font-size: 30px;
+        color: white;
+        cursor: pointer;
+    }
+
+
+    .navbar-link {
+        font-size: 16px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Ensure the navbar-center (including login button) is properly centered */
+    .navbar-center.open {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .navbar-right.open {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+}
+
+
+.profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 3px solid whitesmoke;
+}
+
+.navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-username {
+    font-size: 14px;
+    color: #fff;
+    /* Adjust color as needed */
+}

@@ -1,0 +1,211 @@
+/* Container for the Task Page */
+.task-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10rem;
+  margin-bottom: 5rem;
+}
+
+/* Form for adding tasks */
+.add-task {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.add-task input, .add-task textarea {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.add-task button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-task button:hover {
+  background-color: #45a049;
+}
+
+/* Task Columns */
+.task-columns {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.task-column {
+  background-color: #f4f4f4;
+  width: 400px;
+  min-height: 400px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid greenyellow;
+}
+
+.task-column h2 {
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Individual Task Item */
+.task-item {
+  background-color: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.task-item:hover {
+  background-color: #e9f7f3;
+}
+
+/* Task Icons (Eye, Edit, Trash) */
+.task-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.task-actions svg {
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.task-actions svg:hover {
+  transform: scale(1.2);
+  color: #4CAF50;
+}
+
+.task-actions svg:nth-child(2):hover {
+  color: #ff9800; /* Edit color */
+}
+
+.task-actions svg:nth-child(3):hover {
+  color: #f44336; /* Delete color */
+}
+/* Modal */
+.modal {
+  display: none;  /* Hidden by default */
+  position: fixed;
+  z-index: 9999;  /* Ensure it stays on top of everything */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);  /* Dark background with some opacity */
+  padding-top: 0;
+  overflow: auto;  /* Allow scrolling if needed */
+  transition: opacity 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;  /* Center vertically */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 15px;  /* Rounded corners */
+  width: 80%;
+  max-width: 600px;  /* Max width to avoid too wide modal */
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);  /* Soft shadow effect */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease-out;  /* Smooth fade-in effect */
+  text-align: center;
+}
+
+/* Fade-In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.model-title{
+  font-size: 24px;
+  color: black;
+  font-weight: 500;
+}
+
+.model-content{
+  font-size: 15px;
+  color: black;
+  font-weight: 300;
+}
+
+.model-create{
+  font-size: 15px;
+  color: black;
+  font-weight: 200;
+  margin-top: 15px;
+}
+
+.model-update{
+  font-size: 15px;
+  color: black;
+  font-weight: 200;
+  margin-top: 15px;
+}
+
+/* Close Button */
+.modal button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: red;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal button:hover {
+  background-color: darkred;  /* Darker shade on hover */
+}
+
+
+.task-item {
+  transition: opacity 0.1s ease;
+}
+
+.task-item.dragging {
+  background-color: #ffffff;
+  color: black;
+  font-weight: 400;
+}
+
+.task-column.drag-over {
+  border: 4px dashed greenyellow; /* Highlight the drop area with a green-yellow dashed border */
+  background-color: #ffffff; /* Subtle background change to indicate the drop zone */
+}
