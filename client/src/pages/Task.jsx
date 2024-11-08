@@ -163,19 +163,6 @@ const handleDragLeave = (e) => {
     }
 };
 
-// Touch event handlers
-const handleTouchMove = (e) => {
-    const taskElement = document.querySelector('.dragging');
-    if (taskElement) {
-        taskElement.style.position = 'absolute';
-        taskElement.style.left = `${e.touches[0].clientX}px`;
-        taskElement.style.top = `${e.touches[0].clientY}px`;
-        e.preventDefault(); // Prevent scrolling while dragging
-    }
-};
-
-// Attach event listeners for touch devices
-document.addEventListener('touchmove', handleTouchMove);
 
   const handleDeleteTask = async (taskId) => {
     try {
