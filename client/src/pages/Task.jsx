@@ -97,66 +97,85 @@ const Task = () => {
       }
     }
   };
-
   const handleDragStart = (e, task) => {
     e.target.classList.add('dragging');
     e.dataTransfer.setData('taskId', task._id);
+    
+    // For touch devices
     if (e.type === 'touchstart') {
-      e.currentTarget.style.opacity = '0.5';
+        e.currentTarget.style.opacity = '0.5';
+        // Prevent default to avoid issues with touch
+        e.preventDefault();
     }
-  };
-  
-  const handleDragEnd = (e) => {
+};
+
+const handleDragEnd = (e) => {
     e.target.classList.remove('dragging');
+    
+    // Reset opacity for touch devices
     if (e.type === 'touchend') {
-      e.currentTarget.style.opacity = '1';
+        e.currentTarget.style.opacity = '1';
     }
-  };
-  
-  const handleDragOver = (e) => {
+};
+
+const handleDragOver = (e) => {
+    e.preventDefault(); // Prevent default to allow drop
+    const column = e.target.closest('.task-column');
+    if (column) {
+        column.classList.add('drag-over'); 
+    }
+};
+
+const handleDrop = async (e, newProgress) => {
     e.preventDefault();
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.add('drag-over'); 
+        column.classList.remove('drag-over'); // Remove drop area highlight
     }
-  };
-  
-  const handleDrop = async (e, newProgress) => {
-    e.preventDefault();
-    const column = e.target.closest('.task-column');
-    if (column) {
-      column.classList.remove('drag-over'); // Remove drop area highlight
-    }
-  
-    const taskId = e.dataTransfer.getData('taskId');
+
+    const taskId = e.dataTransfer.getData('taskId') || e.target.dataset.taskId; // Handle touch data retrieval
     if (taskId) {
-      try {
-        const token = getAuthToken();  // Retrieve the token for this request
-        await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        // Re-fetch tasks after updating
-        const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setTasks(response.data.tasks);
-      } catch (err) {
-        setError('Error updating task: ' + err.message);
-      }
+        try {
+            const token = getAuthToken();  // Retrieve the token for this request
+            await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Re-fetch tasks after updating
+            const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setTasks(response.data.tasks);
+        } catch (err) {
+            setError('Error updating task: ' + err.message);
+        }
     }
-  };
-  
-  const handleDragLeave = (e) => {
+};
+
+const handleDragLeave = (e) => {
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.remove('drag-over'); // Remove drop area highlight when drag leaves
+        column.classList.remove('drag-over'); // Remove drop area highlight when drag leaves
     }
-  };
+};
+
+// Touch event handlers
+const handleTouchMove = (e) => {
+    const taskElement = document.querySelector('.dragging');
+    if (taskElement) {
+        taskElement.style.position = 'absolute';
+        taskElement.style.left = `${e.touches[0].clientX}px`;
+        taskElement.style.top = `${e.touches[0].clientY}px`;
+        e.preventDefault(); // Prevent scrolling while dragging
+    }
+};
+
+// Attach event listeners for touch devices
+document.addEventListener('touchmove', handleTouchMove);
 
   const handleDeleteTask = async (taskId) => {
     try {
