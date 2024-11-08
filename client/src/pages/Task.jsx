@@ -21,7 +21,7 @@ const Task = () => {
     const fetchTasks = async () => {
       try {
         const token = getAuthToken();  // Retrieve the token
-        const response = await axios.get('http://localhost:5000/api/v2/tasks/getAllTasks', {
+        const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
           headers: {
             Authorization: `Bearer ${token}`,  // Add the token to the request headers
           },
@@ -53,7 +53,7 @@ const Task = () => {
 
         if (selectedTask) {
           // Update existing task
-          response = await axios.put(`http://localhost:5000/api/v2/tasks/update-task/${selectedTask._id}`, 
+          response = await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`, 
             { title, content }, {
               headers: {
                 Authorization: `Bearer ${token}`,  // Add the token to the request headers
@@ -61,7 +61,7 @@ const Task = () => {
             });
         } else {
           // Add new task
-          response = await axios.post('http://localhost:5000/api/v2/tasks/create-task', 
+          response = await axios.post('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task', 
             { title, content }, {
               headers: {
                 Authorization: `Bearer ${token}`,  // Add the token to the request headers
@@ -128,14 +128,14 @@ const Task = () => {
     if (taskId) {
       try {
         const token = getAuthToken();  // Retrieve the token for this request
-        await axios.put(`http://localhost:5000/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
+        await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
   
         // Re-fetch tasks after updating
-        const response = await axios.get('http://localhost:5000/api/v2/tasks/getAllTasks', {
+        const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -157,7 +157,7 @@ const Task = () => {
   const handleDeleteTask = async (taskId) => {
     try {
       const token = getAuthToken();
-      await axios.delete(`http://localhost:5000/api/v2/tasks/delete-task/${taskId}`, {
+      await axios.delete(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/delete-task/${taskId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
