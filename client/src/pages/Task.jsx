@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa'; // Importing React Icons
+import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';  // Importing React Icons
 import "../css/Task.css";
 
 const Task = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [tasks, setTasks] = useState({}); // Store grouped tasks by progress
+  const [tasks, setTasks] = useState({});  // Store grouped tasks by progress
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null); // To handle task updates and views
@@ -14,20 +14,20 @@ const Task = () => {
 
   // Function to get the auth token from localStorage (or wherever you store it)
   const getAuthToken = () => {
-    return localStorage.getItem('token'); // Adjust if you're storing the token elsewhere
+    return localStorage.getItem('token');  // Adjust if you're storing the token elsewhere
   };
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const token = getAuthToken(); // Retrieve the token
+        const token = getAuthToken();  // Retrieve the token
         const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
           headers: {
-            Authorization: `Bearer ${token}`, // Add the token to the request headers
+            Authorization: `Bearer ${token}`,  // Add the token to the request headers
           },
         });
         if (response.data.success) {
-          setTasks(response.data.tasks); // Grouped tasks by progress
+          setTasks(response.data.tasks);  // Grouped tasks by progress
         } else {
           setError('Failed to fetch tasks.');
         }
@@ -48,43 +48,37 @@ const Task = () => {
   const handleAddOrUpdateTask = async () => {
     if (title && content) {
       try {
-        const token = getAuthToken(); // Retrieve the token for this request
+        const token = getAuthToken();  // Retrieve the token for this request
         let response;
 
         if (selectedTask) {
           // Update existing task
-          response = await axios.put(
-            `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`,
-            { title, content },
-            {
+          response = await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`, 
+            { title, content }, {
               headers: {
-                Authorization: `Bearer ${token}`, // Add the token to the request headers
+                Authorization: `Bearer ${token}`,  // Add the token to the request headers
               },
-            }
-          );
+            });
         } else {
           // Add new task
-          response = await axios.post(
-            'https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task',
-            { title, content },
-            {
+          response = await axios.post('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task', 
+            { title, content }, {
               headers: {
-                Authorization: `Bearer ${token}`, // Add the token to the request headers
+                Authorization: `Bearer ${token}`,  // Add the token to the request headers
               },
-            }
-          );
+            });
         }
 
-        const newTask = response.data.task; // Assuming the new task data is in response.data.task
+        const newTask = response.data.task;  // Assuming the new task data is in `response.data.task`
 
         // Immediately update the state without re-fetching all tasks
         setTasks((prevTasks) => {
           const updatedTasks = { ...prevTasks };
-          const status = selectedTask ? selectedTask.progress : 'todo'; // Update the existing task's column
+          const status = selectedTask ? selectedTask.progress : 'todo';  // Update the existing task's column
           
           if (selectedTask) {
             // Replace the old task with the updated task
-            updatedTasks[status] = updatedTasks[status].map((task) =>
+            updatedTasks[status] = updatedTasks[status].map(task =>
               task._id === selectedTask._id ? newTask : task
             );
           } else {
@@ -97,103 +91,95 @@ const Task = () => {
         // Clear the form inputs
         setTitle('');
         setContent('');
-        setSelectedTask(null); // Clear selected task after updating
+        setSelectedTask(null);  // Clear selected task after updating
       } catch (err) {
         setError('Error adding/updating task: ' + err.message);
       }
     }
   };
 
-  // Handle drag start
+  
   const handleDragStart = (e, task) => {
     e.target.classList.add('dragging');
     e.dataTransfer.setData('taskId', task._id);
     
     // For touch devices
     if (e.type === 'touchstart') {
-      e.currentTarget.style.opacity = '0.5';
-      // Prevent default to avoid issues with touch
-      e.preventDefault();
+        e.currentTarget.style.opacity = '0.5';
+        // Prevent default to avoid issues with touch
+        e.preventDefault();
     }
-  };
+};
 
-  const handleDragEnd = (e) => {
+const handleDragEnd = (e) => {
     e.target.classList.remove('dragging');
     
     // Reset opacity for touch devices
     if (e.type === 'touchend') {
-      e.currentTarget.style.opacity = '1';
+        e.currentTarget.style.opacity = '1';
     }
-  };
+};
 
-  // Handle drag over
-  const handleDragOver = (e) => {
+const handleDragOver = (e) => {
     e.preventDefault(); // Prevent default to allow drop
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.add('drag-over');
+        column.classList.add('drag-over'); 
     }
-  };
+};
 
-  // Handle drop event
-  const handleDrop = async (e, newProgress) => {
+const handleDrop = async (e, newProgress) => {
     e.preventDefault();
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.remove('drag-over'); // Remove drop area highlight
+        column.classList.remove('drag-over'); // Remove drop area highlight
     }
 
     const taskId = e.dataTransfer.getData('taskId') || e.target.dataset.taskId; // Handle touch data retrieval
     if (taskId) {
-      try {
-        const token = getAuthToken(); // Retrieve the token for this request
-        await axios.put(
-          `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`,
-          { progress: newProgress },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        try {
+            const token = getAuthToken();  // Retrieve the token for this request
+            await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        // Re-fetch tasks after updating
-        const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setTasks(response.data.tasks);
-      } catch (err) {
-        setError('Error updating task: ' + err.message);
-      }
+            // Re-fetch tasks after updating
+            const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setTasks(response.data.tasks);
+        } catch (err) {
+            setError('Error updating task: ' + err.message);
+        }
     }
-  };
+};
 
-  const handleDragLeave = (e) => {
+const handleDragLeave = (e) => {
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.remove('drag-over'); // Remove drop area highlight when drag leaves
+        column.classList.remove('drag-over'); // Remove drop area highlight when drag leaves
     }
-  };
+};
+
 
   const handleDeleteTask = async (taskId) => {
     try {
       const token = getAuthToken();
-      await axios.delete(
-        `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/delete-task/${taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/delete-task/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       // Remove deleted task from the state
       setTasks((prevTasks) => {
         const updatedTasks = { ...prevTasks };
         ['todo', 'inprogress', 'complete'].forEach((status) => {
-          updatedTasks[status] = updatedTasks[status]?.filter((task) => task._id !== taskId);
+          updatedTasks[status] = updatedTasks[status]?.filter(task => task._id !== taskId);
         });
         return updatedTasks;
       });
@@ -230,6 +216,7 @@ const Task = () => {
     return formattedDate; // This will return date in dd-mm-yyyy format
   };
 
+
   return (
     <div className="task-page">
       <div className="add-task">
@@ -260,29 +247,26 @@ const Task = () => {
               onDrop={(e) => handleDrop(e, 'todo')}
               onDragLeave={handleDragLeave}
             >
-              <h2 style={{color: 'black', fontSize: '20px'}}>TODO</h2>
+              <h2 style={{color:'black', fontSize:'20px'}}>TODO</h2>
               {Array.isArray(tasks.todo) && tasks.todo.length > 0 ? (
                 tasks.todo.map((task) => (
                   <div
                     key={task._id}
-                    className="task-card"
+                    className="task-item"
                     draggable
                     onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd}
-                    data-task-id={task._id} // For touch devices
+                    onDragEnd={handleDragEnd} 
                   >
-                    <h3>{task.title}</h3>
-                    <p>{task.content}</p>
+                    {task.title}
                     <div className="task-actions">
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaEye onClick={() => handleViewTask(task)} />
+                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
                     </div>
-                    <p className="task-date">{formatDate(task.createdAt)}</p>
                   </div>
                 ))
               ) : (
-                <div>No tasks in this column</div>
+                <div>No tasks found for this column</div>
               )}
             </div>
 
@@ -292,29 +276,26 @@ const Task = () => {
               onDrop={(e) => handleDrop(e, 'inprogress')}
               onDragLeave={handleDragLeave}
             >
-              <h2>IN PROGRESS</h2>
+              <h2 style={{color:'black', fontSize:'20px'}}>IN PROGRESS</h2>
               {Array.isArray(tasks.inprogress) && tasks.inprogress.length > 0 ? (
                 tasks.inprogress.map((task) => (
                   <div
                     key={task._id}
-                    className="task-card"
+                    className="task-item"
                     draggable
                     onDragStart={(e) => handleDragStart(e, task)}
                     onDragEnd={handleDragEnd}
-                    data-task-id={task._id} // For touch devices
                   >
-                    <h3>{task.title}</h3>
-                    <p>{task.content}</p>
+                    {task.title}
                     <div className="task-actions">
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaEye onClick={() => handleViewTask(task)} />
+                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
                     </div>
-                    <p className="task-date">{formatDate(task.createdAt)}</p>
                   </div>
                 ))
               ) : (
-                <div>No tasks in this column</div>
+                <div>No tasks found for this column</div>
               )}
             </div>
 
@@ -322,43 +303,44 @@ const Task = () => {
               className="task-column"
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, 'complete')}
-              onDragLeave={handleDragLeave}
+              onDragLeave={handleDragLeave} 
             >
-              <h2>COMPLETE</h2>
+              <h2 style={{color:'black', fontSize:'20px'}}>COMPLETE</h2>
               {Array.isArray(tasks.complete) && tasks.complete.length > 0 ? (
                 tasks.complete.map((task) => (
                   <div
                     key={task._id}
-                    className="task-card"
+                    className="task-item"
                     draggable
                     onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd}
-                    data-task-id={task._id} // For touch devices
+                    onDragEnd={handleDragEnd} 
                   >
-                    <h3>{task.title}</h3>
-                    <p>{task.content}</p>
+                    {task.title}
                     <div className="task-actions">
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaEye onClick={() => handleViewTask(task)} />
+                      <FaEdit onClick={() => handleUpdateTask(task)} />
                       <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
                     </div>
-                    <p className="task-date">{formatDate(task.createdAt)}</p>
                   </div>
                 ))
               ) : (
-                <div>No tasks in this column</div>
+                <div>No tasks found for this column</div>
               )}
             </div>
           </>
         )}
       </div>
 
-      {showModal && (
+
+
+      {/* Modal for task details */}
+      {showModal && selectedTask && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{selectedTask.title}</h2>
-            <p>{selectedTask.content}</p>
-            <p className="task-date">{formatDate(selectedTask.createdAt)}</p>
+            <h2 className='model-title'>{selectedTask.title}</h2>
+            <p className='model-content'>{selectedTask.content}</p>
+            <p className='model-create'>Task Created: {formatDate(selectedTask.createdAt)}</p>
+            <p className='model-update'>Task Updated: {formatDate(selectedTask.updatedAt)}</p>
             <button onClick={handleCloseModal}>Close</button>
           </div>
         </div>
