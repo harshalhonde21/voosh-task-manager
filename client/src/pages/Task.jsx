@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';  // Importing React Icons
 import "../css/Task.css";
+import interact from 'interactjs';
 
 const Task = () => {
   const [title, setTitle] = useState('');
@@ -97,6 +98,70 @@ const Task = () => {
       }
     }
   };
+
+
+  const [draggedTask, setDraggedTask] = useState(null);
+
+
+  useEffect(() => {
+    // Fetch tasks on initial render
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks(response.data.tasks);
+      } catch (err) {
+        setError('Error fetching tasks: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+
+    // Initialize interact.js for draggable elements
+    interact('.task')
+      .draggable({
+        listeners: {
+          start(event) {
+            const taskElement = event.target;
+            const taskId = taskElement.dataset.taskId;
+            setDraggedTask(taskId);
+            taskElement.style.opacity = '0.5';
+          },
+          move(event) {
+            event.target.style.transform = `translate(${event.dx}px, ${event.dy}px)`;
+          },
+          end(event) {
+            event.target.style.opacity = '1';
+            event.target.style.transform = 'none';
+            setDraggedTask(null);
+          },
+        },
+        inertia: true, // Adds a bit of momentum at the end of drag
+      });
+
+    // Initialize interact.js for drop zones
+    interact('.task-column').dropzone({
+      ondragenter(event) {
+        event.target.classList.add('drag-over');
+      },
+      ondragleave(event) {
+        event.target.classList.remove('drag-over');
+      },
+      ondrop(event) {
+        const newProgress = event.target.dataset.progress;
+        handleDrop(draggedTask, newProgress);
+        event.target.classList.remove('drag-over');
+      },
+    });
+  }, [draggedTask]);
+
+
+
+
   const handleDragStart = (e, task) => {
     e.target.classList.add('dragging');
     e.dataTransfer.setData('taskId', task._id);
