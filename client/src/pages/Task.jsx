@@ -99,21 +99,25 @@ const Task = () => {
   };
 
   const handleDragStart = (e, task) => {
-    // Add class to indicate dragging
     e.target.classList.add('dragging');
     e.dataTransfer.setData('taskId', task._id);
+    if (e.type === 'touchstart') {
+      e.currentTarget.style.opacity = '0.5';
+    }
   };
   
   const handleDragEnd = (e) => {
-    // Remove class when dragging ends
     e.target.classList.remove('dragging');
+    if (e.type === 'touchend') {
+      e.currentTarget.style.opacity = '1';
+    }
   };
   
   const handleDragOver = (e) => {
     e.preventDefault();
     const column = e.target.closest('.task-column');
     if (column) {
-      column.classList.add('drag-over'); // Highlight the drop area
+      column.classList.add('drag-over'); 
     }
   };
   
