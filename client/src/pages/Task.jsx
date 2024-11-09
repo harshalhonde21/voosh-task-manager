@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';  // Importing React Icons
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; 
+import toast from 'react-hot-toast';
+
 import "../css/Task.css";
 
 const Task = () => {
@@ -59,6 +62,8 @@ const Task = () => {
                 Authorization: `Bearer ${token}`,  // Add the token to the request headers
               },
             });
+
+            toast.success('Task updated successfully!');
         } else {
           // Add new task
           response = await axios.post('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task', 
@@ -67,6 +72,8 @@ const Task = () => {
                 Authorization: `Bearer ${token}`,  // Add the token to the request headers
               },
             });
+
+            toast.success('Task added successfully!');
         }
 
         const newTask = response.data.task;  // Assuming the new task data is in `response.data.task`
@@ -94,76 +101,10 @@ const Task = () => {
         setSelectedTask(null);  // Clear selected task after updating
       } catch (err) {
         setError('Error adding/updating task: ' + err.message);
+        toast.error('Error adding/updating task: ' + err.message);
       }
     }
   };
-
-  
-  const handleDragStart = (e, task) => {
-    e.target.classList.add('dragging');
-    e.dataTransfer.setData('taskId', task._id);
-    
-    // For touch devices
-    if (e.type === 'touchstart') {
-        e.currentTarget.style.opacity = '0.5';
-        // Prevent default to avoid issues with touch
-        e.preventDefault();
-    }
-};
-
-const handleDragEnd = (e) => {
-    e.target.classList.remove('dragging');
-    
-    // Reset opacity for touch devices
-    if (e.type === 'touchend') {
-        e.currentTarget.style.opacity = '1';
-    }
-};
-
-const handleDragOver = (e) => {
-    e.preventDefault(); // Prevent default to allow drop
-    const column = e.target.closest('.task-column');
-    if (column) {
-        column.classList.add('drag-over'); 
-    }
-};
-
-const handleDrop = async (e, newProgress) => {
-    e.preventDefault();
-    const column = e.target.closest('.task-column');
-    if (column) {
-        column.classList.remove('drag-over'); // Remove drop area highlight
-    }
-
-    const taskId = e.dataTransfer.getData('taskId') || e.target.dataset.taskId; // Handle touch data retrieval
-    if (taskId) {
-        try {
-            const token = getAuthToken();  // Retrieve the token for this request
-            await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/progress-change/${taskId}/progress`, { progress: newProgress }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            // Re-fetch tasks after updating
-            const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setTasks(response.data.tasks);
-        } catch (err) {
-            setError('Error updating task: ' + err.message);
-        }
-    }
-};
-
-const handleDragLeave = (e) => {
-    const column = e.target.closest('.task-column');
-    if (column) {
-        column.classList.remove('drag-over'); // Remove drop area highlight when drag leaves
-    }
-};
 
 
   const handleDeleteTask = async (taskId) => {
@@ -175,6 +116,8 @@ const handleDragLeave = (e) => {
         },
       });
 
+      toast.success('Task deleted successfully')
+
       // Remove deleted task from the state
       setTasks((prevTasks) => {
         const updatedTasks = { ...prevTasks };
@@ -185,6 +128,8 @@ const handleDragLeave = (e) => {
       });
     } catch (err) {
       setError('Error deleting task: ' + err.message);
+      toast.error('Error deleting task: ' + err.message);
+      
     }
   };
 
@@ -216,6 +161,53 @@ const handleDragLeave = (e) => {
     return formattedDate; // This will return date in dd-mm-yyyy format
   };
 
+  const onDragEnd = (result) => {
+    const { source, destination, draggableId } = result;
+  
+    // Check if the drop is outside any column or dropped in the same column
+    if (!destination || source.droppableId === destination.droppableId) {
+      return;
+    }
+  
+    // Update task progress in state immediately
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks };
+      const movedTask = updatedTasks[source.droppableId].find(task => task._id === draggableId);
+  
+      if (movedTask) {
+        // Remove from source column
+        updatedTasks[source.droppableId] = updatedTasks[source.droppableId].filter(task => task._id !== draggableId);
+        // Update the task's progress locally
+        movedTask.progress = destination.droppableId;
+        // Add to destination column
+        updatedTasks[destination.droppableId] = [...(updatedTasks[destination.droppableId] || []), movedTask];
+      }
+  
+      return updatedTasks;
+    });
+  
+    // Update task progress on the server asynchronously
+    const updateTaskProgressInAPI = async () => {
+      try {
+        const token = getAuthToken();
+        await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${draggableId}`, 
+          { progress: destination.droppableId }, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        // Notify success (optional)
+        toast.success('Task progress updated on server');
+      } catch (err) {
+        setError('Error updating task progress: ' + err.message);
+        // Optionally, show a toast notification for the error
+        toast.error('Failed to update task on server');
+      }
+    };
+  
+    updateTaskProgressInAPI(); // Call the async function
+  };
+  
 
   return (
     <div className="task-page">
@@ -236,104 +228,51 @@ const handleDragLeave = (e) => {
         </button>
       </div>
 
-      <div className="task-columns">
-        {loading ? (
-          <div>Loading...</div>
-        ) : (
-          <>
-            <div
-              className="task-column"
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, 'todo')}
-              onDragLeave={handleDragLeave}
-            >
-              <h2 style={{color:'black', fontSize:'20px'}}>TODO</h2>
-              {Array.isArray(tasks.todo) && tasks.todo.length > 0 ? (
-                tasks.todo.map((task) => (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="task-columns">
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            ['todo', 'inprogress', 'complete'].map((status) => (
+              <Droppable key={status} droppableId={status}>
+                {(provided) => (
                   <div
-                    key={task._id}
-                    className="task-item"
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd} 
+                    className="task-column"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
                   >
-                    {task.title}
-                    <div className="task-actions">
-                      <FaEye onClick={() => handleViewTask(task)} />
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
-                      <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
-                    </div>
+                    <h2 style={{ color: 'black', fontSize: '20px' }}>{status.toUpperCase()}</h2>
+                    {Array.isArray(tasks[status]) && tasks[status].length > 0 ? (
+                      tasks[status].map((task, index) => (
+                        <Draggable key={task._id} draggableId={task._id} index={index}>
+                          {(provided) => (
+                            <div
+                              className="task-item"
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <h3>{task.title}</h3>
+                              <div className='btn-action'>
+                              <button style={{border:'none'}} onClick={() => handleUpdateTask(task)}><FaEdit /></button>
+                              <button style={{border:'none'}} onClick={() => handleDeleteTask(task._id)}><FaTrashAlt /></button>
+                              <button style={{border:'none'}} onClick={() => handleViewTask(task)}><FaEye /></button></div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
+                    ) : (
+                      <p>No tasks</p>
+                    )}
+                    {provided.placeholder}
                   </div>
-                ))
-              ) : (
-                <div>No tasks found for this column</div>
-              )}
-            </div>
+                )}
+              </Droppable>
+            ))
+          )}
+        </div>
+      </DragDropContext>
 
-            <div
-              className="task-column"
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, 'inprogress')}
-              onDragLeave={handleDragLeave}
-            >
-              <h2 style={{color:'black', fontSize:'20px'}}>IN PROGRESS</h2>
-              {Array.isArray(tasks.inprogress) && tasks.inprogress.length > 0 ? (
-                tasks.inprogress.map((task) => (
-                  <div
-                    key={task._id}
-                    className="task-item"
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    {task.title}
-                    <div className="task-actions">
-                      <FaEye onClick={() => handleViewTask(task)} />
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
-                      <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div>No tasks found for this column</div>
-              )}
-            </div>
-
-            <div
-              className="task-column"
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, 'complete')}
-              onDragLeave={handleDragLeave} 
-            >
-              <h2 style={{color:'black', fontSize:'20px'}}>COMPLETE</h2>
-              {Array.isArray(tasks.complete) && tasks.complete.length > 0 ? (
-                tasks.complete.map((task) => (
-                  <div
-                    key={task._id}
-                    className="task-item"
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task)}
-                    onDragEnd={handleDragEnd} 
-                  >
-                    {task.title}
-                    <div className="task-actions">
-                      <FaEye onClick={() => handleViewTask(task)} />
-                      <FaEdit onClick={() => handleUpdateTask(task)} />
-                      <FaTrashAlt onClick={() => handleDeleteTask(task._id)} />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div>No tasks found for this column</div>
-              )}
-            </div>
-          </>
-        )}
-      </div>
-
-
-
-      {/* Modal for task details */}
       {showModal && selectedTask && (
         <div className="modal">
           <div className="modal-content">
@@ -345,8 +284,9 @@ const handleDragLeave = (e) => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
 
-export default Task;
+export default Task

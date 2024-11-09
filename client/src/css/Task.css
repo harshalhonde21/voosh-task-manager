@@ -76,6 +76,11 @@
   transition: background-color 0.2s;
 }
 
+.btn-action{
+  display: flex;
+  gap: 5px;
+}
+
 .task-item:hover {
   background-color: #e9f7f3;
 }
@@ -86,23 +91,24 @@
   gap: 10px;
 }
 
-.task-actions svg {
+.btn-action svg {
   font-size: 18px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  border: none;
 }
 
-.task-actions svg:hover {
+.btn-action svg:hover {
   transform: scale(1.2);
   color: #4CAF50;
 }
 
-.task-actions svg:nth-child(2):hover {
-  color: #ff9800; /* Edit color */
+.btn-action svg:nth-child(2):hover {
+  color: #ff9800; 
 }
 
-.task-actions svg:nth-child(3):hover {
-  color: #f44336; /* Delete color */
+.btn-action svg:nth-child(3):hover {
+  color: #f44336; 
 }
 /* Modal */
 .modal {
