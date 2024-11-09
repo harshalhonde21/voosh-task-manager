@@ -22,6 +22,7 @@ const userSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     registerUserFailure(state, action) {
       state.loading = false;
