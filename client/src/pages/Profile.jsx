@@ -13,7 +13,6 @@ const Profile = () => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    // Optionally, remove any relevant tokens from localStorage if used
     localStorage.removeItem('token');
     localStorage.removeItem('authState');
   };

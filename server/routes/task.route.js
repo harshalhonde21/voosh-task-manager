@@ -11,7 +11,6 @@ import { isAuthenticated } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Task Routes
 router.post("/create-task", isAuthenticated, createTask); // Create a task
 router.delete("/delete-task/:taskId", isAuthenticated, deleteTask); // Delete a task
 router.put("/update-task/:taskId", isAuthenticated, updateTask); // Update a task

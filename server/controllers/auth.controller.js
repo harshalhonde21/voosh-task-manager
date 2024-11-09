@@ -9,7 +9,6 @@ export const registerUser = async (req, res) => {
         const { firstName, lastName, username, email, password } = req.body;
         const profilePictureFile = req.file;
 
-        // Validate input fields
         if ([firstName, lastName, username, email, password].some((field) => field?.trim() === "")) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -152,9 +151,8 @@ export const isLogin = async (req, res) => {
 
 export const firebaseAuth = async (req, res) => {
     try {
-        const { email, name, picture } = req.user; // Extract user details from the token
+        const { email, name, picture } = req.user; 
 
-        // Check if user already exists in the database
         let user = await User.findOne({ email });
 
         const password = Math.random().toString(36).slice(-8);
@@ -171,19 +169,16 @@ export const firebaseAuth = async (req, res) => {
                 lastName: name.split(" ")[1], // Extract last name
                 username: name.split(" ")[0] + name.split(" ")[1], // Combine first and last name for a default username
                 email: email,
-                profilePicture: picture, // Firebase provides profile picture
-                googleId: req.user.uid, // Save the Firebase UID as googleId
+                profilePicture: picture, 
+                googleId: req.user.uid, 
                 password
             });
         }
 
-        // Save the user (either new or updated)
         await user.save();
 
-        // Create a token using the createToken middleware
         const token = createToken(user._id, user.email);
 
-        // Return response with user data and token
         res.status(200).json({
             message: "User authenticated and saved",
             user: {
@@ -194,7 +189,7 @@ export const firebaseAuth = async (req, res) => {
                 email: user.email,
                 profilePicture: user.profilePicture,
             },
-            token, // Send the generated token in the response
+            token, 
         });
     } catch (error) {
         console.error("Error during authentication:", error);

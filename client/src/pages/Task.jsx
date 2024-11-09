@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';  // Importing React Icons
+import { FaTrashAlt, FaEdit, FaEye } from 'react-icons/fa';  
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'; 
 import toast from 'react-hot-toast';
 
@@ -9,28 +9,28 @@ import "../css/Task.css";
 const Task = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [tasks, setTasks] = useState({});  // Store grouped tasks by progress
+  const [tasks, setTasks] = useState({}); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedTask, setSelectedTask] = useState(null); // To handle task updates and views
-  const [showModal, setShowModal] = useState(false); // To control modal visibility
+  const [selectedTask, setSelectedTask] = useState(null); 
+  const [showModal, setShowModal] = useState(false); 
 
-  // Function to get the auth token from localStorage (or wherever you store it)
   const getAuthToken = () => {
-    return localStorage.getItem('token');  // Adjust if you're storing the token elsewhere
+    return localStorage.getItem('token');  
   };
 
+  // hook to fetch the tasks
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const token = getAuthToken();  // Retrieve the token
         const response = await axios.get('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks', {
           headers: {
-            Authorization: `Bearer ${token}`,  // Add the token to the request headers
+            Authorization: `Bearer ${token}`,  
           },
         });
         if (response.data.success) {
-          setTasks(response.data.tasks);  // Grouped tasks by progress
+          setTasks(response.data.tasks); 
         } else {
           setError('Failed to fetch tasks.');
         }
@@ -48,10 +48,11 @@ const Task = () => {
     fetchTasks();
   }, []);
 
+  // function to add the task and update the task
   const handleAddOrUpdateTask = async () => {
     if (title && content) {
       try {
-        const token = getAuthToken();  // Retrieve the token for this request
+        const token = getAuthToken();  
         let response;
 
         if (selectedTask) {
@@ -59,7 +60,7 @@ const Task = () => {
           response = await axios.put(`https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`, 
             { title, content }, {
               headers: {
-                Authorization: `Bearer ${token}`,  // Add the token to the request headers
+                Authorization: `Bearer ${token}`,  
               },
             });
 
@@ -69,36 +70,32 @@ const Task = () => {
           response = await axios.post('https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task', 
             { title, content }, {
               headers: {
-                Authorization: `Bearer ${token}`,  // Add the token to the request headers
+                Authorization: `Bearer ${token}`,  
               },
             });
 
             toast.success('Task added successfully!');
         }
 
-        const newTask = response.data.task;  // Assuming the new task data is in `response.data.task`
+        const newTask = response.data.task;  
 
-        // Immediately update the state without re-fetching all tasks
         setTasks((prevTasks) => {
           const updatedTasks = { ...prevTasks };
-          const status = selectedTask ? selectedTask.progress : 'todo';  // Update the existing task's column
+          const status = selectedTask ? selectedTask.progress : 'todo'; 
           
           if (selectedTask) {
-            // Replace the old task with the updated task
             updatedTasks[status] = updatedTasks[status].map(task =>
               task._id === selectedTask._id ? newTask : task
             );
           } else {
-            // Add new task to the 'todo' column
             updatedTasks[status] = [...(updatedTasks[status] || []), newTask];
           }
           return updatedTasks;
         });
 
-        // Clear the form inputs
         setTitle('');
         setContent('');
-        setSelectedTask(null);  // Clear selected task after updating
+        setSelectedTask(null);  
       } catch (err) {
         setError('Error adding/updating task: ' + err.message);
         toast.error('Error adding/updating task: ' + err.message);
@@ -106,7 +103,7 @@ const Task = () => {
     }
   };
 
-
+// function to delete tasks
   const handleDeleteTask = async (taskId) => {
     try {
       const token = getAuthToken();
@@ -118,7 +115,6 @@ const Task = () => {
 
       toast.success('Task deleted successfully')
 
-      // Remove deleted task from the state
       setTasks((prevTasks) => {
         const updatedTasks = { ...prevTasks };
         ['todo', 'inprogress', 'complete'].forEach((status) => {
@@ -141,11 +137,11 @@ const Task = () => {
 
   const handleViewTask = (task) => {
     setSelectedTask(task);
-    setShowModal(true); // Open modal when eye icon is clicked
+    setShowModal(true); 
   };
 
   const handleCloseModal = () => {
-    setShowModal(false); // Close modal
+    setShowModal(false);
   };
 
   const formatDate = (date) => {
@@ -153,40 +149,35 @@ const Task = () => {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-      timeZone: 'Asia/Kolkata', // Ensures IST timezone
+      timeZone: 'Asia/Kolkata', 
     };
-    // Convert the date to a formatted string in IST (dd-mm-yyyy)
     const formattedDate = new Date(date).toLocaleDateString('en-IN', options);
 
-    return formattedDate; // This will return date in dd-mm-yyyy format
+    return formattedDate; 
   };
 
+  // update the progress with progress api and some stuff related drag drop functionality
   const onDragEnd = (result) => {
     const { source, destination, draggableId } = result;
   
-    // Check if the drop is outside any column or dropped in the same column
     if (!destination || source.droppableId === destination.droppableId) {
       return;
     }
   
-    // Update task progress in state immediately
     setTasks((prevTasks) => {
       const updatedTasks = { ...prevTasks };
       const movedTask = updatedTasks[source.droppableId].find(task => task._id === draggableId);
   
       if (movedTask) {
-        // Remove from source column
         updatedTasks[source.droppableId] = updatedTasks[source.droppableId].filter(task => task._id !== draggableId);
-        // Update the task's progress locally
         movedTask.progress = destination.droppableId;
-        // Add to destination column
         updatedTasks[destination.droppableId] = [...(updatedTasks[destination.droppableId] || []), movedTask];
       }
   
       return updatedTasks;
     });
   
-    // Update task progress on the server asynchronously
+    // after updating the task locally updated in server
     const updateTaskProgressInAPI = async () => {
       try {
         const token = getAuthToken();
@@ -202,7 +193,7 @@ const Task = () => {
       }
     };
   
-    updateTaskProgressInAPI(); // Call the async function
+    updateTaskProgressInAPI(); 
   };
   
 
