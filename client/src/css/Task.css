@@ -196,14 +196,7 @@
   transition: background-color 0.3s;
 }
 
-.modal button:hover {
-  background-color: darkred;  /* Darker shade on hover */
-}
 
-
-.task-item {
-  transition: opacity 0.1s ease;
-}
 
 .task-item.dragging {
   background-color: #ffffff;
@@ -212,8 +205,8 @@
 }
 
 .task-column.drag-over {
-  border: 4px dashed greenyellow; /* Highlight the drop area with a green-yellow dashed border */
-  background-color: #ffffff; /* Subtle background change to indicate the drop zone */
+  border: 4px dashed greenyellow;
+  background-color: #ffffff; 
 }
 
 

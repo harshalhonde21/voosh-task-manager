@@ -196,11 +196,8 @@ const Task = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-        // Notify success (optional)
-        toast.success('Task progress updated on server');
       } catch (err) {
         setError('Error updating task progress: ' + err.message);
-        // Optionally, show a toast notification for the error
         toast.error('Failed to update task on server');
       }
     };
