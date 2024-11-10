@@ -12,11 +12,6 @@ const app = express();
 const port = process.env.PORT;
 const mongoUrl = process.env.MONGO_URL;
 
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-  next();
-});
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
