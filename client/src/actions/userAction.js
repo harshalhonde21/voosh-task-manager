@@ -99,11 +99,9 @@ export const googleAuth = () => async (dispatch) => {
 
     if (response.status === 200) {
       localStorage.setItem('token', response.data.token);
-      console.log(response.data.token);
       dispatch(loginUserSuccess({ user: response.data.user, token: response.data.token }));
       localStorage.setItem('authState', 'true');
       toast.success(response.data.message);
-      console.log(response.data.message)
     }
   } catch (err) {
     dispatch(loginUserFailure(err.response ? err.response.data.message : err.message));  // Corrected action name

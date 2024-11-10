@@ -54,7 +54,6 @@ export const isAuthenticated = (req, res, next) => {
 
 export const checkAuth = async (req, res, next) => {
     const { token } = req.body;
-    console.log(token)
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized, token not provided" });
