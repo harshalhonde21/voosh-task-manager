@@ -54,7 +54,7 @@ const Task = () => {
       try {
         const token = getAuthToken(); // Retrieve the token
         const response = await axios.get(
-          "https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/getAllTasks",
+          "https://voosh-task-manager-wiej.onrender.com/api/v2/tasks/getAllTasks",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const Task = () => {
         if (selectedTask) {
           // Update existing task
           response = await axios.put(
-            `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`,
+            `https://voosh-task-manager-wiej.onrender.com/api/v2/tasks/update-task/${selectedTask._id}`,
             { title, content },
             {
               headers: {
@@ -103,7 +103,7 @@ const Task = () => {
         } else {
           // Add new task
           response = await axios.post(
-            "https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/create-task",
+            "https://voosh-task-manager-wiej.onrender.com/api/v2/tasks/create-task",
             { title, content },
             {
               headers: {
@@ -146,7 +146,7 @@ const Task = () => {
     try {
       const token = getAuthToken();
       await axios.delete(
-        `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/delete-task/${taskId}`,
+        `https://voosh-task-manager-wiej.onrender.com/api/v2/tasks/delete-task/${taskId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -231,7 +231,7 @@ const Task = () => {
       try {
         const token = getAuthToken();
         await axios.put(
-          `https://voosh-task-manager-f6en.onrender.com/api/v2/tasks/update-task/${draggableId}`,
+          `https://voosh-task-manager-wiej.onrender.com/api/v2/tasks/update-task/${draggableId}`,
           { progress: destination.droppableId },
           {
             headers: {

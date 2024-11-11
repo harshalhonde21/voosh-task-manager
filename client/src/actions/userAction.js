@@ -26,7 +26,7 @@ export const registerUser = (userData) => async (dispatch) => {
       headers: { 'Content-Type': 'multipart/form-data', }
     };
 
-    const response = await axios.post(`https://voosh-task-manager-f6en.onrender.com/api/v1/users/register`, userData, config);
+    const response = await axios.post(`https://voosh-task-manager-wiej.onrender.com/api/v1/users/register`, userData, config);
 
     if (response.status === 201) {
       localStorage.setItem('token', response.data.token);
@@ -51,7 +51,7 @@ export const loginUser = (userData) => async (dispatch) => {
       headers: { 'Content-Type': 'application/json' }
     };
 
-    const response = await axios.post(`https://voosh-task-manager-f6en.onrender.com/api/v1/users/login`, userData, config);
+    const response = await axios.post(`https://voosh-task-manager-wiej.onrender.com/api/v1/users/login`, userData, config);
 
     if (response.status === 200) {
       localStorage.setItem('token', response.data.token);
@@ -75,7 +75,7 @@ export const isLogin = () => async (dispatch) => {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     };
 
-    const response = await axios.get(`https://voosh-task-manager-f6en.onrender.com/api/v1/users/isLogin`, config);
+    const response = await axios.get(`https://voosh-task-manager-wiej.onrender.com/api/v1/users/isLogin`, config);
 
     if (response.status === 200) {
       dispatch(isLoginSuccess({ user: response.data.user }));  // Corrected action name
@@ -95,7 +95,7 @@ export const googleAuth = () => async (dispatch) => {
       headers: { 'Content-Type': 'application/json' }
     };
 
-    const response = await axios.post(`https://voosh-task-manager-f6en.onrender.com/api/v1/users/firebase-auth`, { token }, config);
+    const response = await axios.post(`https://voosh-task-manager-wiej.onrender.com/api/v1/users/firebase-auth`, { token }, config);
 
     if (response.status === 200) {
       localStorage.setItem('token', response.data.token);
