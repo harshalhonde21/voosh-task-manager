@@ -1,13 +1,12 @@
 import { useState } from "react";
 import "../css/Login.css";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { googleAuth, registerUser, loginUser } from "../actions/userAction";
-
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners"; // Importing the loader
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true); 
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -17,11 +16,10 @@ const Login = () => {
     profilePicture: "",
   });
   const [error, setError] = useState("");
-  
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false); // Loading state
 
-  
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,52 +47,65 @@ const Login = () => {
       setError("Please enter both email and password");
       return;
     }
-    dispatch(loginUser(formData)).then(() => {
-      clearFormFields(); 
-      
-    navigate('/profile');
-    });
-
+    setLoading(true); // Show loader
+    dispatch(loginUser(formData))
+      .then(() => {
+        clearFormFields();
+        setLoading(false); // Hide loader after successful response
+        navigate("/profile");
+      })
+      .catch(() => setLoading(false)); // Hide loader on error
   };
+
   const handleSignupSubmit = (e) => {
     e.preventDefault();
     const { firstName, lastName, username, email, password, profilePicture } = formData;
-  
+
     if (!firstName || !lastName || !username || !email || !password) {
       setError("All fields are required");
       return;
     }
-  
-    const formDataToSend = new FormData(); 
-    formDataToSend.append('firstName', firstName);
-    formDataToSend.append('lastName', lastName);
-    formDataToSend.append('username', username);
-    formDataToSend.append('email', email);
-    formDataToSend.append('password', password);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("firstName", firstName);
+    formDataToSend.append("lastName", lastName);
+    formDataToSend.append("username", username);
+    formDataToSend.append("email", email);
+    formDataToSend.append("password", password);
     if (profilePicture) {
-      formDataToSend.append('profilePicture', profilePicture);
+      formDataToSend.append("profilePicture", profilePicture);
     }
-  
-    dispatch(registerUser(formDataToSend)).then(() => {
-      clearFormFields(); 
-      navigate('/profile');
-    });
 
-
+    setLoading(true); // Show loader
+    dispatch(registerUser(formDataToSend))
+      .then(() => {
+        clearFormFields();
+        setLoading(false); // Hide loader after successful response
+        navigate("/profile");
+      })
+      .catch(() => setLoading(false)); // Hide loader on error
   };
-  
-  
-  
 
   const handleSignupLoginGoogle = () => {
+    setLoading(true); // Show loader
     dispatch(googleAuth())
-
-
-    navigate('/profile');
-  }
+      .then(() => {
+        setLoading(false); // Hide loader after successful response
+        navigate("/profile");
+      })
+      .catch(() => setLoading(false)); // Hide loader on error
+  };
 
   return (
     <div className="auth-container">
+      {loading && (
+        <div className="loader-overlay">
+          <div className="loader-container">
+            <ClipLoader color="#ffffff" size={50} />
+            <p>Loading as server is free takes time to auth, please wait...</p>
+          </div>
+        </div>
+      )}
       <form
         className="auth-form"
         onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit}
@@ -161,7 +172,6 @@ const Login = () => {
           />
         </div>
 
-        {/* Profile Picture Input */}
         {!isLogin && (
           <div className="input-group">
             <input
@@ -188,7 +198,7 @@ const Login = () => {
         <button
           onClick={handleSignupLoginGoogle}
           style={{ marginTop: "1rem" }}
-          type="submit"
+          type="button"
           className="auth-btn"
         >
           {isLogin ? "Login with Google" : "Sign Up with Google"}
